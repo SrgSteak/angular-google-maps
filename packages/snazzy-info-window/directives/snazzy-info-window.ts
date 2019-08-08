@@ -1,5 +1,5 @@
-import { Host, SkipSelf, OnChanges, AfterViewInit, EventEmitter, Input, SimpleChanges, ViewContainerRef, TemplateRef, Output, Optional, OnDestroy, ElementRef, Component, ViewChild, ContentChild } from '@angular/core';
-import { AgmMarker, GoogleMapsAPIWrapper, MarkerManager, MapsAPILoader } from '@agm/core';
+import {AgmMarker, GoogleMapsAPIWrapper, MapsAPILoader, MarkerManager} from '@agm/core';
+import {AfterViewInit, Component, ContentChild, ElementRef, EventEmitter, Host, Input, OnChanges, OnDestroy, Optional, Output, SimpleChanges, SkipSelf, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 
 declare var require: any;
 
@@ -11,13 +11,15 @@ declare var require: any;
 export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges {
   /**
    * The latitude and longitude where the info window is anchored.
-   * The offset will default to 0px when using this option. Only required/used if you are not using a agm-marker.
+   * The offset will default to 0px when using this option. Only required/used if you are not using
+   * a agm-marker.
    */
   @Input() latitude: number;
 
   /**
    * The longitude where the info window is anchored.
-   * The offset will default to 0px when using this option. Only required/used if you are not using a agm-marker.
+   * The offset will default to 0px when using this option. Only required/used if you are not using
+   * a agm-marker.
    */
   @Input() longitude: number;
 
@@ -34,17 +36,17 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
   /**
    * Choose where you want the info window to be displayed, relative to the marker.
    */
-  @Input() placement: 'top' | 'bottom' | 'left' | 'right' = 'top';
+  @Input() placement: 'top'|'bottom'|'left'|'right' = 'top';
 
   /**
    * The max width in pixels of the info window.
    */
-  @Input() maxWidth: number | string = 200;
+  @Input() maxWidth: number|string = 200;
 
   /**
    * The max height in pixels of the info window.
    */
-  @Input() maxHeight: number | string = 200;
+  @Input() maxHeight: number|string = 200;
 
   /**
    * The color to use for the background of the info window.
@@ -60,7 +62,7 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
    * A custom border around the info window. Set to false to completely remove the border.
    * The units used for border should be the same as pointer.
    */
-  @Input() border: { width: string; color: string } | boolean;
+  @Input() border: {width: string; color: string}|boolean;
 
   /**
    * A custom CSS border radius property to specify the rounded corners of the info window.
@@ -82,13 +84,15 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
    * Set to false to completely remove the pointer.
    * The units used for pointer should be the same as border.
    */
-  @Input() pointer: string | boolean;
+  @Input() pointer: string|boolean;
 
   /**
    * The CSS properties for the shadow of the info window.
    * Set to false to completely remove the shadow.
    */
-  @Input() shadow: boolean | { h?: string, v?: string, blur: string, spread: string, opacity: number, color: string };
+  @Input()
+  shadow: boolean|
+      {h?: string, v?: string, blur: string, spread: string, opacity: number, color: string};
 
   /**
    * Determines if the info window will open when the marker is clicked.
@@ -97,8 +101,9 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
   @Input() openOnMarkerClick: boolean = true;
 
   /**
-   * Determines if the info window will close when the map is clicked. An internal listener is added to the Google Maps click event which calls the close() method.
-   * This will not activate on the Google Maps drag event when the user is panning the map.
+   * Determines if the info window will close when the map is clicked. An internal listener is added
+   * to the Google Maps click event which calls the close() method. This will not activate on the
+   * Google Maps drag event when the user is panning the map.
    */
   @Input() closeOnMapClick: boolean = true;
 
@@ -141,12 +146,12 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
   /**
    * @internal
    */
-  @ViewChild('outerWrapper', { read: ElementRef }) _outerWrapper: ElementRef;
+  @ViewChild('outerWrapper', {read: ElementRef}) _outerWrapper: ElementRef;
 
   /**
    * @internal
    */
-  @ViewChild('viewContainer', { read: ViewContainerRef }) _viewContainerRef: ViewContainerRef;
+  @ViewChild('viewContainer', {read: ViewContainerRef}) _viewContainerRef: ViewContainerRef;
 
   /**
    * @internal
@@ -154,14 +159,12 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
   @ContentChild(TemplateRef) _templateRef: TemplateRef<any>;
 
   protected _nativeSnazzyInfoWindow: any;
-  protected _snazzyInfoWindowInitialized: Promise<any> | null = null;
+  protected _snazzyInfoWindowInitialized: Promise<any>|null = null;
 
   constructor(
-    @Optional() @Host() @SkipSelf() private _marker: AgmMarker,
-    private _wrapper: GoogleMapsAPIWrapper,
-    private _manager: MarkerManager,
-    private _loader: MapsAPILoader
-  ) { }
+      @Optional() @Host() @SkipSelf() private _marker: AgmMarker,
+      private _wrapper: GoogleMapsAPIWrapper, private _manager: MarkerManager,
+      private _loader: MapsAPILoader) {}
 
   /**
    * @internal
@@ -185,61 +188,59 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
    */
   ngAfterViewInit() {
     const m = this._manager != null ? this._manager.getNativeMarker(this._marker) : null;
-    this._snazzyInfoWindowInitialized = this._loader.load()
-      .then(() => require('snazzy-info-window'))
-      .then((module: any) => Promise.all([module, m, this._wrapper.getNativeMap()]))
-      .then((elems) => {
-        const options: any = {
-          map: elems[2],
-          content: '',
-          placement: this.placement,
-          maxWidth: this.maxWidth,
-          maxHeight: this.maxHeight,
-          backgroundColor: this.backgroundColor,
-          padding: this.padding,
-          border: this.border,
-          borderRadius: this.borderRadius,
-          fontColor: this.fontColor,
-          pointer: this.pointer,
-          shadow: this.shadow,
-          closeOnMapClick: this.closeOnMapClick,
-          openOnMarkerClick: this.openOnMarkerClick,
-          closeWhenOthersOpen: this.closeWhenOthersOpen,
-          showCloseButton: this.showCloseButton,
-          panOnOpen: this.panOnOpen,
-          wrapperClass: this.wrapperClass,
-          callbacks: {
-            beforeOpen: () => {
-              this._createViewContent();
-              this.beforeOpen.emit();
-            },
-            afterOpen: () => {
-              this.isOpenChange.emit(this.openStatus());
-            },
-            afterClose: () => {
-              this.afterClose.emit();
-              this.isOpenChange.emit(this.openStatus());
-            }
-          }
-        };
-        if (this.additionalOptions) {
-          for (const property in this.additionalOptions) {
-            if (this.additionalOptions.hasOwnProperty(property)) {
-              options[property] = this.additionalOptions[property];
-            }
-          }
-        }
+    this._snazzyInfoWindowInitialized =
+        this._loader.load()
+            .then(() => require('snazzy-info-window'))
+            .then((module: any) => Promise.all([module, m, this._wrapper.getNativeMap()]))
+            .then((elems) => {
+              const options: any = {
+                map: elems[2],
+                content: '',
+                placement: this.placement,
+                maxWidth: this.maxWidth,
+                maxHeight: this.maxHeight,
+                backgroundColor: this.backgroundColor,
+                padding: this.padding,
+                border: this.border,
+                borderRadius: this.borderRadius,
+                fontColor: this.fontColor,
+                pointer: this.pointer,
+                shadow: this.shadow,
+                closeOnMapClick: this.closeOnMapClick,
+                openOnMarkerClick: this.openOnMarkerClick,
+                closeWhenOthersOpen: this.closeWhenOthersOpen,
+                showCloseButton: this.showCloseButton,
+                panOnOpen: this.panOnOpen,
+                wrapperClass: this.wrapperClass,
+                callbacks: {
+                  beforeOpen: () => {
+                    this._createViewContent();
+                    this.beforeOpen.emit();
+                  },
+                  afterOpen: () => {
+                    this.isOpenChange.emit(this.openStatus());
+                  },
+                  afterClose: () => {
+                    this.afterClose.emit();
+                    this.isOpenChange.emit(this.openStatus());
+                  }
+                }
+              };
+              if (this.additionalOptions) {
+                for (const property in this.additionalOptions) {
+                  if (this.additionalOptions.hasOwnProperty(property)) {
+                    options[property] = this.additionalOptions[property];
+                  }
+                }
+              }
 
-        if (elems[1] != null) {
-          options.marker = elems[1];
-        } else {
-          options.position = {
-            lat: this.latitude,
-            lng: this.longitude
-          };
-        }
-        this._nativeSnazzyInfoWindow = new elems[0](options);
-      });
+              if (elems[1] != null) {
+                options.marker = elems[1];
+              } else {
+                options.position = {lat: this.latitude, lng: this.longitude};
+              }
+              this._nativeSnazzyInfoWindow = new elems[0](options);
+            });
     this._snazzyInfoWindowInitialized.then(() => {
       if (this.isOpen) {
         this._openInfoWindow();
@@ -273,10 +274,7 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
   }
 
   protected _updatePosition() {
-    this._nativeSnazzyInfoWindow.setPosition({
-      lat: this.latitude,
-      lng: this.longitude
-    });
+    this._nativeSnazzyInfoWindow.setPosition({lat: this.latitude, lng: this.longitude});
   }
 
   /**

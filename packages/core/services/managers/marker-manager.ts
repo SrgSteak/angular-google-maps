@@ -10,12 +10,11 @@ declare var google: any;
 
 @Injectable()
 export class MarkerManager {
-  protected _markers: Map<AgmMarker, Promise<Marker>> =
-      new Map<AgmMarker, Promise<Marker>>();
+  protected _markers: Map<AgmMarker, Promise<Marker>> = new Map<AgmMarker, Promise<Marker>>();
 
   constructor(protected _mapsWrapper: GoogleMapsAPIWrapper, protected _zone: NgZone) {}
 
-  async convertAnimation(uiAnim: 'BOUNCE' | 'DROP' | null): Promise<any>{
+  async convertAnimation(uiAnim: 'BOUNCE'|'DROP'|null): Promise<any> {
     if (uiAnim === null) {
       return null;
     } else {
@@ -47,7 +46,9 @@ export class MarkerManager {
   }
 
   updateLabel(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then((m: Marker) => { m.setLabel(marker.label); });
+    return this._markers.get(marker).then((m: Marker) => {
+      m.setLabel(marker.label);
+    });
   }
 
   updateDraggable(marker: AgmMarker): Promise<void> {
@@ -80,20 +81,21 @@ export class MarkerManager {
   }
 
   addMarker(marker: AgmMarker) {
-
-    const markerPromise = new Promise<Marker>(async (resolve) =>
-     this._mapsWrapper.createMarker({
-        position: {lat: marker.latitude, lng: marker.longitude},
-        label: marker.label,
-        draggable: marker.draggable,
-        icon: marker.iconUrl,
-        opacity: marker.opacity,
-        visible: marker.visible,
-        zIndex: marker.zIndex,
-        title: marker.title,
-        clickable: marker.clickable,
-        animation: await this.convertAnimation(marker.animation)
-      }).then(resolve));
+    const markerPromise = new Promise<Marker>(
+        async (resolve) => this._mapsWrapper
+                               .createMarker({
+                                 position: {lat: marker.latitude, lng: marker.longitude},
+                                 label: marker.label,
+                                 draggable: marker.draggable,
+                                 icon: marker.iconUrl,
+                                 opacity: marker.opacity,
+                                 visible: marker.visible,
+                                 zIndex: marker.zIndex,
+                                 title: marker.title,
+                                 clickable: marker.clickable,
+                                 animation: await this.convertAnimation(marker.animation)
+                               })
+                               .then(resolve));
     this._markers.set(marker, markerPromise);
   }
 

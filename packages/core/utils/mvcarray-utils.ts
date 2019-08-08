@@ -1,12 +1,17 @@
-import { MVCArray, MapsEventListener } from '../services/google-maps-types';
-import { Observable, fromEventPattern } from 'rxjs';
+import {fromEventPattern, Observable} from 'rxjs';
 
-export function createMVCEventObservable<T>(array: MVCArray<T>): Observable<MVCEvent<T>>{
+import {MapsEventListener, MVCArray} from '../services/google-maps-types';
+
+export function createMVCEventObservable<T>(array: MVCArray<T>): Observable<MVCEvent<T>> {
   const eventNames = ['insert_at', 'remove_at', 'set_at'];
   return fromEventPattern(
-    (handler: Function) => eventNames.map(evName => array.addListener(evName,
-      (index: number, previous?: T) => handler.apply(array, [ {'newArr': array.getArray(), evName, index, previous} as MVCEvent<T>]))),
-    (handler: Function, evListeners: MapsEventListener[]) => evListeners.forEach(evListener => evListener.remove()));
+      (handler: Function) => eventNames.map(
+          evName => array.addListener(
+              evName,
+              (index: number, previous?: T) => handler.apply(
+                  array, [{'newArr': array.getArray(), evName, index, previous} as MVCEvent<T>]))),
+      (handler: Function, evListeners: MapsEventListener[]) =>
+          evListeners.forEach(evListener => evListener.remove()));
 }
 
 export interface MVCEvent<T> {
@@ -16,14 +21,12 @@ export interface MVCEvent<T> {
   previous?: T;
 }
 
-export type MvcEventType = 'insert_at' | 'remove_at' | 'set_at';
+export type MvcEventType = 'insert_at'|'remove_at'|'set_at';
 
 export class MvcArrayMock<T> implements MVCArray<T> {
   private vals: T[] = [];
   private listeners: {
-    'remove_at': Function[];
-    'insert_at': Function[];
-    'set_at': Function[];
+    'remove_at': Function[]; 'insert_at': Function[]; 'set_at': Function[];
     [key: string]: Function[];
   } = {
     'remove_at': [] as Function[],
@@ -32,7 +35,7 @@ export class MvcArrayMock<T> implements MVCArray<T> {
   };
   clear(): void {
     for (let i = this.vals.length - 1; i >= 0; i--) {
-        this.removeAt(i);
+      this.removeAt(i);
     }
   }
   getArray(): T[] {
@@ -75,9 +78,9 @@ export class MvcArrayMock<T> implements MVCArray<T> {
     const listenerArr = this.listeners[eventName];
     listenerArr.push(handler);
     return {
-        remove: () => {
-            listenerArr.splice(listenerArr.indexOf(handler), 1);
-        }
+      remove: () => {
+        listenerArr.splice(listenerArr.indexOf(handler), 1);
+      }
     };
   }
 }

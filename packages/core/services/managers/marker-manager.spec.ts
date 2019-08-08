@@ -1,5 +1,5 @@
 import {NgZone} from '@angular/core';
-import {TestBed, inject, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, inject, TestBed, tick} from '@angular/core/testing';
 
 import {AgmMarker} from './../../directives/marker';
 import {GoogleMapsAPIWrapper} from './../google-maps-api-wrapper';
@@ -36,7 +36,7 @@ describe('MarkerManager', () => {
 
   describe('Create a new marker', () => {
     it('should call the mapsApiWrapper when creating a new marker',
-      fakeAsync(inject(
+       fakeAsync(inject(
            [MarkerManager, GoogleMapsAPIWrapper],
            (markerManager: MarkerManager, apiWrapper: GoogleMapsAPIWrapper) => {
              const newMarker = new AgmMarker(markerManager);
@@ -44,8 +44,8 @@ describe('MarkerManager', () => {
              newMarker.longitude = 22.3;
              newMarker.label = 'A';
              markerManager.addMarker(newMarker);
-              flushMicrotasks();
-              expect(apiWrapper.createMarker).toHaveBeenCalledWith({
+             flushMicrotasks();
+             expect(apiWrapper.createMarker).toHaveBeenCalledWith({
                position: {lat: 34.4, lng: 22.3},
                label: 'A',
                draggable: false,
@@ -57,7 +57,7 @@ describe('MarkerManager', () => {
                clickable: true,
                animation: undefined
              });
-          })));
+           })));
   });
 
   describe('Delete a marker', () => {
@@ -70,14 +70,13 @@ describe('MarkerManager', () => {
              newMarker.longitude = 22.3;
              newMarker.label = 'A';
 
-             const markerInstance: any = {
-              setMap: jest.fn()
-             };
+             const markerInstance: any = {setMap: jest.fn()};
              (<jest.Mock>apiWrapper.createMarker).mockReturnValue(Promise.resolve(markerInstance));
 
              markerManager.addMarker(newMarker);
-             markerManager.deleteMarker(newMarker).then(
-                 () => { expect(markerInstance.setMap).toHaveBeenCalledWith(null); });
+             markerManager.deleteMarker(newMarker).then(() => {
+               expect(markerInstance.setMap).toHaveBeenCalledWith(null);
+             });
            })));
   });
 
@@ -91,10 +90,7 @@ describe('MarkerManager', () => {
              newMarker.longitude = 22.3;
              newMarker.label = 'A';
 
-             const markerInstance: any = {
-              setMap: jest.fn(),
-              setIcon: jest.fn()
-             };
+             const markerInstance: any = {setMap: jest.fn(), setIcon: jest.fn()};
              (<jest.Mock>apiWrapper.createMarker).mockReturnValue(Promise.resolve(markerInstance));
 
              markerManager.addMarker(newMarker);
@@ -113,8 +109,9 @@ describe('MarkerManager', () => {
              });
              const iconUrl = 'http://angular-maps.com/icon.png';
              newMarker.iconUrl = iconUrl;
-             return markerManager.updateIcon(newMarker).then(
-                 () => { expect(markerInstance.setIcon).toHaveBeenCalledWith(iconUrl); });
+             return markerManager.updateIcon(newMarker).then(() => {
+               expect(markerInstance.setIcon).toHaveBeenCalledWith(iconUrl);
+             });
            })));
   });
 
@@ -128,10 +125,7 @@ describe('MarkerManager', () => {
              newMarker.longitude = 22.3;
              newMarker.label = 'A';
 
-             const markerInstance: any = {
-              setMap: jest.fn(),
-              setOpacity: jest.fn()
-             };
+             const markerInstance: any = {setMap: jest.fn(), setOpacity: jest.fn()};
              (<jest.Mock>apiWrapper.createMarker).mockReturnValue(Promise.resolve(markerInstance));
 
              markerManager.addMarker(newMarker);
@@ -150,14 +144,15 @@ describe('MarkerManager', () => {
              });
              const opacity = 0.4;
              newMarker.opacity = opacity;
-             return markerManager.updateOpacity(newMarker).then(
-                 () => { expect(markerInstance.setOpacity).toHaveBeenCalledWith(opacity); });
+             return markerManager.updateOpacity(newMarker).then(() => {
+               expect(markerInstance.setOpacity).toHaveBeenCalledWith(opacity);
+             });
            })));
   });
 
   describe('set visible option', () => {
     it('should update that marker via setVisible method when the visible changes',
-      fakeAsync(inject(
+       fakeAsync(inject(
            [MarkerManager, GoogleMapsAPIWrapper],
            (markerManager: MarkerManager, apiWrapper: GoogleMapsAPIWrapper) => {
              const newMarker = new AgmMarker(markerManager);
@@ -166,10 +161,7 @@ describe('MarkerManager', () => {
              newMarker.label = 'A';
              newMarker.visible = false;
 
-             const markerInstance: any = {
-              setMap: jest.fn(),
-              setVisible: jest.fn()
-             };
+             const markerInstance: any = {setMap: jest.fn(), setVisible: jest.fn()};
              (<jest.Mock>apiWrapper.createMarker).mockReturnValue(Promise.resolve(markerInstance));
 
              markerManager.addMarker(newMarker);
@@ -187,14 +179,15 @@ describe('MarkerManager', () => {
                animation: undefined
              });
              newMarker.visible = true;
-             return markerManager.updateVisible(newMarker).then(
-                 () => { expect(markerInstance.setVisible).toHaveBeenCalledWith(true); });
+             return markerManager.updateVisible(newMarker).then(() => {
+               expect(markerInstance.setVisible).toHaveBeenCalledWith(true);
+             });
            })));
   });
 
   describe('set zIndex option', () => {
     it('should update that marker via setZIndex method when the zIndex changes',
-      fakeAsync(inject(
+       fakeAsync(inject(
            [MarkerManager, GoogleMapsAPIWrapper],
            (markerManager: MarkerManager, apiWrapper: GoogleMapsAPIWrapper) => {
              const newMarker = new AgmMarker(markerManager);
@@ -203,10 +196,7 @@ describe('MarkerManager', () => {
              newMarker.label = 'A';
              newMarker.visible = false;
 
-             const markerInstance: any = {
-              setMap: jest.fn(),
-              setZIndex: jest.fn()
-             };
+             const markerInstance: any = {setMap: jest.fn(), setZIndex: jest.fn()};
              (<jest.Mock>apiWrapper.createMarker).mockReturnValue(Promise.resolve(markerInstance));
 
              markerManager.addMarker(newMarker);
@@ -225,14 +215,15 @@ describe('MarkerManager', () => {
              });
              const zIndex = 10;
              newMarker.zIndex = zIndex;
-             return markerManager.updateZIndex(newMarker).then(
-                 () => { expect(markerInstance.setZIndex).toHaveBeenCalledWith(zIndex); });
+             return markerManager.updateZIndex(newMarker).then(() => {
+               expect(markerInstance.setZIndex).toHaveBeenCalledWith(zIndex);
+             });
            })));
   });
 
   describe('set animation option', () => {
     it('should update that marker via setAnimation method when the animation changes',
-      fakeAsync(inject(
+       fakeAsync(inject(
            [MarkerManager, GoogleMapsAPIWrapper],
            (markerManager: MarkerManager, apiWrapper: GoogleMapsAPIWrapper) => {
              const newMarker = new AgmMarker(markerManager);
@@ -243,8 +234,9 @@ describe('MarkerManager', () => {
              newMarker.animation = null;
 
              const markerInstance: any = {
-              setMap: jest.fn(),
-              setAnimation: jest.fn().mockReturnValue(new Promise(resolve => setTimeout(resolve, 500)))
+               setMap: jest.fn(),
+               setAnimation:
+                   jest.fn().mockReturnValue(new Promise(resolve => setTimeout(resolve, 500)))
              };
              (<jest.Mock>apiWrapper.createMarker).mockReturnValue(Promise.resolve(markerInstance));
 

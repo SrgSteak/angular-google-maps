@@ -1,11 +1,13 @@
-import { AfterContentInit, ContentChildren, Directive, EventEmitter, Input, OnChanges, OnDestroy, Output, QueryList, SimpleChange, forwardRef } from '@angular/core';
-import { Observable, ReplaySubject, Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { MarkerLabel, MouseEvent } from '../map-types';
-import { FitBoundsAccessor, FitBoundsDetails } from '../services/fit-bounds';
+import {AfterContentInit, ContentChildren, Directive, EventEmitter, forwardRef, Input, OnChanges, OnDestroy, Output, QueryList, SimpleChange} from '@angular/core';
+import {Observable, ReplaySubject, Subscription} from 'rxjs';
+import {tap} from 'rxjs/operators';
+
+import {MarkerLabel, MouseEvent} from '../map-types';
+import {FitBoundsAccessor, FitBoundsDetails} from '../services/fit-bounds';
 import * as mapTypes from '../services/google-maps-types';
-import { MarkerManager } from '../services/managers/marker-manager';
-import { AgmInfoWindow } from './info-window';
+import {MarkerManager} from '../services/managers/marker-manager';
+
+import {AgmInfoWindow} from './info-window';
 
 let markerId = 0;
 
@@ -34,9 +36,7 @@ let markerId = 0;
  */
 @Directive({
   selector: 'agm-marker',
-  providers: [
-    {provide: FitBoundsAccessor, useExisting: forwardRef(() => AgmMarker)}
-  ],
+  providers: [{provide: FitBoundsAccessor, useExisting: forwardRef(() => AgmMarker)}],
   inputs: [
     'latitude', 'longitude', 'title', 'label', 'draggable: markerDraggable', 'iconUrl',
     'openInfoWindow', 'opacity', 'visible', 'zIndex', 'animation'
@@ -62,7 +62,7 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
   /**
    * The label (a single uppercase character) for the marker.
    */
-  @Input() label: string | MarkerLabel;
+  @Input() label: string|MarkerLabel;
 
   /**
    * If true, the marker can be dragged. Default value is false.
@@ -153,15 +153,19 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
   @Output() mouseOut: EventEmitter<MouseEvent> = new EventEmitter<MouseEvent>();
 
   /** @internal */
-  @ContentChildren(AgmInfoWindow) infoWindow: QueryList<AgmInfoWindow> = new QueryList<AgmInfoWindow>();
+  @ContentChildren(AgmInfoWindow)
+  infoWindow: QueryList<AgmInfoWindow> = new QueryList<AgmInfoWindow>();
 
   private _markerAddedToManger: boolean = false;
   private _id: string;
   private _observableSubscriptions: Subscription[] = [];
 
-  protected readonly _fitBoundsDetails$: ReplaySubject<FitBoundsDetails> = new ReplaySubject<FitBoundsDetails>(1);
+  protected readonly _fitBoundsDetails$: ReplaySubject<FitBoundsDetails> =
+      new ReplaySubject<FitBoundsDetails>(1);
 
-  constructor(private _markerManager: MarkerManager) { this._id = (markerId++).toString(); }
+  constructor(private _markerManager: MarkerManager) {
+    this._id = (markerId++).toString();
+  }
 
   /* @internal */
   ngAfterContentInit() {
@@ -288,18 +292,21 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
     this._observableSubscriptions.push(mout);
 
     const anChng =
-        this._markerManager.createEventObservable<void>('animation_changed', this)
-            .subscribe(() => {
-              this.animationChange.emit(this.animation);
-            });
+        this._markerManager.createEventObservable<void>('animation_changed', this).subscribe(() => {
+          this.animationChange.emit(this.animation);
+        });
     this._observableSubscriptions.push(anChng);
   }
 
   /** @internal */
-  id(): string { return this._id; }
+  id(): string {
+    return this._id;
+  }
 
   /** @internal */
-  toString(): string { return 'AgmMarker-' + this._id.toString(); }
+  toString(): string {
+    return 'AgmMarker-' + this._id.toString();
+  }
 
   /** @internal */
   ngOnDestroy() {
@@ -309,4 +316,4 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
   }
 }
 
-export type Animation = 'BOUNCE' | 'DROP' | null;
+export type Animation = 'BOUNCE'|'DROP'|null;

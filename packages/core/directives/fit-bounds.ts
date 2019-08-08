@@ -1,18 +1,18 @@
-import { Directive, OnInit, Self, OnDestroy, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { FitBoundsService, FitBoundsAccessor, FitBoundsDetails } from '../services/fit-bounds';
-import { Subscription, Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import { LatLng, LatLngLiteral } from '@agm/core';
+import {LatLng, LatLngLiteral} from '@agm/core';
+import {Directive, Input, OnChanges, OnDestroy, OnInit, Self, SimpleChanges} from '@angular/core';
+import {Subject, Subscription} from 'rxjs';
+import {distinctUntilChanged, takeUntil} from 'rxjs/operators';
+
+import {FitBoundsAccessor, FitBoundsDetails, FitBoundsService} from '../services/fit-bounds';
 
 /**
  * Adds the given directive to the auto fit bounds feature when the value is true.
- * To make it work with you custom AGM component, you also have to implement the {@link FitBoundsAccessor} abstract class.
+ * To make it work with you custom AGM component, you also have to implement the {@link
+ * FitBoundsAccessor} abstract class.
  * @example
  * <agm-marker [agmFitBounds]="true"></agm-marker>
  */
-@Directive({
-  selector: '[agmFitBounds]'
-})
+@Directive({selector: '[agmFitBounds]'})
 export class AgmFitBounds implements OnInit, OnDestroy, OnChanges {
   /**
    * If the value is true, the element gets added to the bounds of the map.
@@ -21,12 +21,11 @@ export class AgmFitBounds implements OnInit, OnDestroy, OnChanges {
   @Input() agmFitBounds: boolean = true;
 
   private _destroyed$: Subject<void> = new Subject<void>();
-  private _latestFitBoundsDetails: FitBoundsDetails | null = null;
+  private _latestFitBoundsDetails: FitBoundsDetails|null = null;
 
   constructor(
-    @Self() private readonly _fitBoundsAccessor: FitBoundsAccessor,
-    private readonly _fitBoundsService: FitBoundsService
-  ) {}
+      @Self() private readonly _fitBoundsAccessor: FitBoundsAccessor,
+      private readonly _fitBoundsService: FitBoundsService) {}
 
   /**
    * @internal
@@ -39,17 +38,13 @@ export class AgmFitBounds implements OnInit, OnDestroy, OnChanges {
    * @internal
    */
   ngOnInit() {
-    this._fitBoundsAccessor
-      .getFitBoundsDetails$()
-      .pipe(
-        distinctUntilChanged(
-          (x: FitBoundsDetails, y: FitBoundsDetails) =>
-            x.latLng.lat === y.latLng.lat &&
-            x.latLng.lng === y.latLng.lng
-        ),
-        takeUntil(this._destroyed$)
-      )
-      .subscribe(details => this._updateBounds(details));
+    this._fitBoundsAccessor.getFitBoundsDetails$()
+        .pipe(
+            distinctUntilChanged(
+                (x: FitBoundsDetails, y: FitBoundsDetails) =>
+                    x.latLng.lat === y.latLng.lat && x.latLng.lng === y.latLng.lng),
+            takeUntil(this._destroyed$))
+        .subscribe(details => this._updateBounds(details));
   }
 
   private _updateBounds(newFitBoundsDetails?: FitBoundsDetails) {

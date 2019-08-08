@@ -19,12 +19,13 @@ export class GoogleMapsAPIWrapper {
   private _mapResolver: (value?: mapTypes.GoogleMap) => void;
 
   constructor(private _loader: MapsAPILoader, private _zone: NgZone) {
-    this._map =
-        new Promise<mapTypes.GoogleMap>((resolve: () => void) => { this._mapResolver = resolve; });
+    this._map = new Promise<mapTypes.GoogleMap>((resolve: () => void) => {
+      this._mapResolver = resolve;
+    });
   }
 
   createMap(el: HTMLElement, mapOptions: mapTypes.MapOptions): Promise<void> {
-    return this._zone.runOutsideAngular( () => {
+    return this._zone.runOutsideAngular(() => {
       return this._loader.load().then(() => {
         const map = new google.maps.Map(el, mapOptions);
         this._mapResolver(<mapTypes.GoogleMap>map);
@@ -34,14 +35,17 @@ export class GoogleMapsAPIWrapper {
   }
 
   setMapOptions(options: mapTypes.MapOptions) {
-    this._map.then((m: mapTypes.GoogleMap) => { m.setOptions(options); });
+    this._map.then((m: mapTypes.GoogleMap) => {
+      m.setOptions(options);
+    });
   }
 
   /**
    * Creates a google map marker with the map context
    */
-  createMarker(options: mapTypes.MarkerOptions = <mapTypes.MarkerOptions>{}, addToMap: boolean = true):
-      Promise<mapTypes.Marker> {
+  createMarker(
+      options: mapTypes.MarkerOptions = <mapTypes.MarkerOptions>{},
+      addToMap: boolean = true): Promise<mapTypes.Marker> {
     return this._map.then((map: mapTypes.GoogleMap) => {
       if (addToMap) {
         options.map = map;
@@ -51,7 +55,9 @@ export class GoogleMapsAPIWrapper {
   }
 
   createInfoWindow(options?: mapTypes.InfoWindowOptions): Promise<mapTypes.InfoWindow> {
-    return this._map.then(() => { return new google.maps.InfoWindow(options); });
+    return this._map.then(() => {
+      return new google.maps.InfoWindow(options);
+    });
   }
 
   /**
@@ -109,7 +115,7 @@ export class GoogleMapsAPIWrapper {
    * @param {TransitLayerOptions} options - used for setting layer options
    * @returns {Promise<TransitLayer>} a new transit layer object
    */
-  createTransitLayer(options: mapTypes.TransitLayerOptions): Promise<mapTypes.TransitLayer>{
+  createTransitLayer(options: mapTypes.TransitLayerOptions): Promise<mapTypes.TransitLayer> {
     return this._map.then((map: mapTypes.GoogleMap) => {
       let newLayer: mapTypes.TransitLayer = new google.maps.TransitLayer();
       newLayer.setMap(options.visible ? map : null);
@@ -122,7 +128,7 @@ export class GoogleMapsAPIWrapper {
    * @param {BicyclingLayerOptions} options - used for setting layer options
    * @returns {Promise<BicyclingLayer>} a new bicycling layer object
    */
-  createBicyclingLayer(options: mapTypes.BicyclingLayerOptions): Promise<mapTypes.BicyclingLayer>{
+  createBicyclingLayer(options: mapTypes.BicyclingLayerOptions): Promise<mapTypes.BicyclingLayer> {
     return this._map.then((map: mapTypes.GoogleMap) => {
       let newLayer: mapTypes.BicyclingLayer = new google.maps.BicyclingLayer();
       newLayer.setMap(options.visible ? map : null);
@@ -140,7 +146,9 @@ export class GoogleMapsAPIWrapper {
   subscribeToMapEvent<E>(eventName: string): Observable<E> {
     return new Observable((observer: Observer<E>) => {
       this._map.then((m: mapTypes.GoogleMap) => {
-        m.addListener(eventName, (arg: E) => { this._zone.run(() => observer.next(arg)); });
+        m.addListener(eventName, (arg: E) => {
+          this._zone.run(() => observer.next(arg));
+        });
       });
     });
   }
@@ -155,7 +163,9 @@ export class GoogleMapsAPIWrapper {
     return this._map.then((map: mapTypes.GoogleMap) => map.setCenter(latLng));
   }
 
-  getZoom(): Promise<number> { return this._map.then((map: mapTypes.GoogleMap) => map.getZoom()); }
+  getZoom(): Promise<number> {
+    return this._map.then((map: mapTypes.GoogleMap) => map.getZoom());
+  }
 
   getBounds(): Promise<mapTypes.LatLngBounds> {
     return this._map.then((map: mapTypes.GoogleMap) => map.getBounds());
@@ -192,7 +202,9 @@ export class GoogleMapsAPIWrapper {
   /**
    * Returns the native Google Maps Map instance. Be careful when using this instance directly.
    */
-  getNativeMap(): Promise<mapTypes.GoogleMap> { return this._map; }
+  getNativeMap(): Promise<mapTypes.GoogleMap> {
+    return this._map;
+  }
 
   /**
    * Triggers the given event name on the map instance.
