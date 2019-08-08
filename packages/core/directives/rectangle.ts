@@ -1,12 +1,12 @@
-import {Directive, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange} from '@angular/core';
-import {Subscription} from 'rxjs';
+import { Directive, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange } from '@angular/core';
+import { Subscription } from 'rxjs';
 
-import {MouseEvent} from '../map-types';
-import {LatLngBounds, LatLngBoundsLiteral} from '../services/google-maps-types';
-import {MouseEvent as MapMouseEvent} from '../services/google-maps-types';
-import {RectangleManager} from '../services/managers/rectangle-manager';
+import { MouseEvent } from '../map-types';
+import { LatLngBounds, LatLngBoundsLiteral } from '../services/google-maps-types';
+import { MouseEvent as MapMouseEvent } from '../services/google-maps-types';
+import { RectangleManager } from '../services/managers/rectangle-manager';
 
-@Directive({selector: 'agm-rectangle'})
+@Directive({ selector: 'agm-rectangle' })
 export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
   /**
    * The north position of the rectangle (required).
@@ -69,7 +69,7 @@ export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
    * The stroke position. Defaults to CENTER.
    * This property is not supported on Internet Explorer 8 and earlier.
    */
-  @Input() strokePosition: 'CENTER'|'INSIDE'|'OUTSIDE' = 'CENTER';
+  @Input() strokePosition: 'CENTER' | 'INSIDE' | 'OUTSIDE' = 'CENTER';
 
   /**
    * The stroke width in pixels.
@@ -156,7 +156,7 @@ export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
 
   private _eventSubscriptions: Subscription[] = [];
 
-  constructor(private _manager: RectangleManager) {}
+  constructor(private _manager: RectangleManager) { }
 
   /** @internal */
   ngOnInit() {
@@ -166,7 +166,7 @@ export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
   }
 
   /** @internal */
-  ngOnChanges(changes: {[key: string]: SimpleChange}) {
+  ngOnChanges(changes: { [key: string]: SimpleChange }) {
     if (!this._rectangleAddedToManager) {
       return;
     }
@@ -185,8 +185,8 @@ export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
     this._updateRectangleOptionsChanges(changes);
   }
 
-  private _updateRectangleOptionsChanges(changes: {[propName: string]: SimpleChange;}) {
-    let options: {[propName: string]: any} = {};
+  private _updateRectangleOptionsChanges(changes: { [propName: string]: SimpleChange; }) {
+    let options: { [propName: string]: any } = {};
     let optionKeys = Object.keys(changes).filter(k => AgmRectangle._mapOptions.indexOf(k) !== -1);
     optionKeys.forEach(k => {
       options[k] = changes[k].currentValue;
@@ -213,28 +213,28 @@ export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
 
     events.forEach((eventEmitter, eventName) => {
       this._eventSubscriptions.push(
-          this._manager.createEventObservable<MapMouseEvent>(eventName, this).subscribe(value => {
-            switch (eventName) {
-              case 'bounds_changed':
-                this._manager.getBounds(this).then(
-                    bounds => eventEmitter.emit(<LatLngBoundsLiteral>{
-                      north: bounds.getNorthEast().lat(),
-                      east: bounds.getNorthEast().lng(),
-                      south: bounds.getSouthWest().lat(),
-                      west: bounds.getSouthWest().lng()
-                    }));
-                break;
-              default:
-                eventEmitter.emit(
-                    <MouseEvent>{coords: {lat: value.latLng.lat(), lng: value.latLng.lng()}});
-            }
-          }));
+        this._manager.createEventObservable<MapMouseEvent>(eventName, this).subscribe(value => {
+          switch (eventName) {
+            case 'bounds_changed':
+              this._manager.getBounds(this).then(
+                bounds => eventEmitter.emit(<LatLngBoundsLiteral>{
+                  north: bounds.getNorthEast().lat(),
+                  east: bounds.getNorthEast().lng(),
+                  south: bounds.getSouthWest().lat(),
+                  west: bounds.getSouthWest().lng()
+                }));
+              break;
+            default:
+              eventEmitter.emit(
+                <MouseEvent>{ coords: { lat: value.latLng.lat(), lng: value.latLng.lng() } });
+          }
+        }));
     });
   }
 
   /** @internal */
   ngOnDestroy() {
-    this._eventSubscriptions.forEach(function(s: Subscription) {
+    this._eventSubscriptions.forEach(function (s: Subscription) {
       s.unsubscribe();
     });
     this._eventSubscriptions = null;
